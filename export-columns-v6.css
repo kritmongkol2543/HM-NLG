@@ -1,0 +1,44 @@
+#exportBoard{position:fixed;left:-10000px;top:0;width:1800px;background:#f8f8fa;padding:30px;color:#17181b}
+#exportBoard .ex-head{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:2px solid #202124;padding-bottom:13px;margin-bottom:12px}
+#exportBoard .ex-head h1{font-size:44px;line-height:1;margin:0}
+#exportBoard .ex-head p{margin:0;font-size:13px;color:#777b84}
+.ex-colheads{display:grid;gap:8px;margin-bottom:8px}
+.ex-colhead{height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:.02em}
+.ex-colhead.is-special-col{font-size:11px}
+.ex-colspacer{height:40px}
+#exportBoard .ex-week{display:grid;gap:8px;margin:8px 0;align-items:stretch}
+#exportBoard .ex-weeklabel{min-height:270px;border-radius:14px;background:#17181b;color:#fff;padding:13px 12px;display:flex;flex-direction:column;justify-content:flex-start}
+#exportBoard .ex-weeklabel b{display:block;font-size:22px;line-height:1}
+#exportBoard .ex-weeklabel span{display:block;font-size:10px;opacity:.78;margin-top:7px;line-height:1.45}
+.ex-daycell{min-width:0;min-height:270px;display:flex;align-items:stretch}
+.ex-daycell.is-empty{background:transparent}
+.ex-daystack{display:grid;gap:6px;width:100%;height:100%}
+#exportBoard .ex-card{border:1px solid #dfe2e7;border-radius:14px;background:#fff;overflow:hidden;min-width:0;width:100%;height:100%;display:flex;flex-direction:column}
+#exportBoard .ex-cardhead{display:flex;align-items:center;gap:8px;padding:9px 10px;min-height:52px}
+#exportBoard .ex-cardhead .marker{width:6px;height:33px;border-radius:99px;flex:none}
+#exportBoard .ex-cardhead b{font-size:18px;line-height:1.05;font-weight:950}
+#exportBoard .ex-cardhead span{font-size:9.5px;font-weight:900;line-height:1.1}
+#exportBoard .ex-body{padding:10px 11px 9px;display:flex;flex-direction:column;flex:1}
+#exportBoard .ex-keyrows{display:grid;gap:0}
+#exportBoard .ex-row{display:grid;grid-template-columns:70px minmax(0,1fr);gap:9px;padding:11px 0;border-bottom:1px solid #e5e7eb;align-items:start;line-height:1.08}
+#exportBoard .ex-row:last-child{border-bottom:0}
+#exportBoard .ex-row strong{font-size:10.5px;color:#686d77;letter-spacing:.07em;padding-top:5px;font-weight:950}
+#exportBoard .ex-row b{font-size:22px;font-weight:950;overflow-wrap:anywhere;color:#0f1013;letter-spacing:-.018em;line-height:1.05}
+#exportBoard .ex-product b{font-size:25px;line-height:1.02}
+#exportBoard .ex-speaker b{font-size:22px}
+#exportBoard .ex-bring b{font-size:22px}
+#exportBoard .ex-product strong{color:#555a64}
+#exportBoard .ex-row.is-missing strong{color:#d92d20!important}
+#exportBoard .ex-row.is-missing b{color:#c2413b!important;font-size:16px!important;font-weight:850;letter-spacing:0;opacity:.9;padding-top:2px}
+#exportBoard .ex-set{border-top:1px solid #e5e7eb;margin-top:auto;padding-top:8px;opacity:.92}
+#exportBoard .ex-settitle{font-size:9px;color:#858991;font-weight:950;letter-spacing:.09em;margin-bottom:5px}
+#exportBoard .ex-setline{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(0,.72fr);gap:7px;font-size:9.5px;line-height:1.28;padding:2px 0;color:#555a64}
+#exportBoard .ex-setline span{overflow-wrap:anywhere}
+#exportBoard .ex-setline span:first-child{font-weight:650}
+#exportBoard .ex-setline span:last-child{text-align:right;font-weight:900;color:#30343b}
+#exportBoard .ex-special-card{height:100%!important;min-height:0;align-self:stretch}
+#exportBoard .ex-special-card .ex-cardhead{min-height:48px;padding:8px 10px}
+#exportBoard .ex-special-card .ex-cardhead .marker{height:30px}
+#exportBoard .ex-special-card .ex-cardhead b{font-size:16px}
+#exportBoard .ex-special{margin:8px 10px 10px;padding:9px 8px;border-radius:9px;font-size:11px;font-weight:950;line-height:1;letter-spacing:.05em;text-align:center;display:block;flex:none}
+.ex-exportnote{font-size:10px;color:#8a8d96;margin-top:8px;text-align:right}

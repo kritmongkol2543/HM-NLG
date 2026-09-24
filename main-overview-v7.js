@@ -25,7 +25,7 @@ function buildWeeks(y,m){const first=new Date(y,m,1),last=new Date(y,m+1,0);let 
 function weekIndex(date,ws){const a=iso(anchorFor(parse(date)));return ws.findIndex(w=>iso(w.anchor)===a)}
 function rangeText(w){return `${w.start.toLocaleDateString('th-TH',{day:'numeric',month:'short'})} – ${w.anchor.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}`}
 function englishMonth(y,m){return new Date(y,m,1).toLocaleDateString('en-US',{month:'long',year:'numeric'})}
-async function api(action,payload={}){const code=localStorage.getItem('nlg_access_code')||'';if(!code)throw new Error('locked');const {data,error}=await sbx.rpc('nlg_schedule_api',{p_code:code,p_action:action,p_payload:payload});if(error)throw error;return data}
+async function api(action,payload={}){const {data,error}=await sbx.rpc('nlg_schedule_api',{p_code:'',p_action:action,p_payload:payload});if(error)throw error;return data}
 function row(type,label,value){const empty=!String(value??'').trim();return `<div class="mo-row mo-${type}${empty?' is-missing':''}"><strong>${label}</strong><b>${empty?'ยังไม่มีคนลง':esc(value)}</b></div>`}
 function card(x,settings){
   const d=parse(x.event_date),dc=DAY[d.getDay()];
@@ -61,8 +61,7 @@ function setManualZoom(delta){
 function fitPage(){zoomMode='fit';localStorage.setItem('nlg_overview_zoom_mode','fit');applyZoom()}
 async function renderOverview(force=false){
   const month=$('#month')?.value;if(!month)return;
-  const code=localStorage.getItem('nlg_access_code')||'';if(!code)return;
-  const key=month+'|'+code;if(!force&&key===lastKey&&document.body.classList.contains('overview-live'))return;
+  const key=month;if(!force&&key===lastKey&&document.body.classList.contains('overview-live'))return;
   try{
     const [y,mm]=month.split('-').map(Number),data=await api('load_month',{month});
     const items=(data?.items||[]).map(x=>({...x,event_date:String(x.event_date).slice(0,10)}));
@@ -99,7 +98,6 @@ $('#prev')?.addEventListener('click',()=>schedule(true));
 $('#next')?.addEventListener('click',()=>schedule(true));
 $('#saveItem')?.addEventListener('click',()=>setTimeout(()=>schedule(true),500));
 $('#saveSettings')?.addEventListener('click',()=>setTimeout(()=>schedule(true),500));
-$('#unlockBtn')?.addEventListener('click',()=>setTimeout(()=>schedule(true),500));
 window.addEventListener('resize',()=>{clearTimeout(window.__moResize);window.__moResize=setTimeout(applyZoom,120)});
 const status=$('#status');if(status)new MutationObserver(()=>{if(status.classList.contains('ok'))schedule(true)}).observe(status,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
 setTimeout(()=>renderOverview(true),350);

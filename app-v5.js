@@ -15,7 +15,6 @@ const DAY=[
   {th:'ศุกร์',short:'ศ.',main:'#4779d8',soft:'#eaf1ff'},
   {th:'เสาร์',short:'ส.',main:'#8664d2',soft:'#f0ebfb'}
 ];
-let access=localStorage.getItem('nlg_access_code')||'';
 let state={year:0,month:0,items:[],settings:[]};
 let editId=null,kind='hm_large',busy=false;
 const month=$('#month'), weeks=$('#weeks'), itemModal=$('#itemModal'), settingsModal=$('#settingsModal');
@@ -24,7 +23,7 @@ function toast(t){const x=$('#toast');x.textContent=t;x.classList.add('on');setT
 function setStatus(t,cls=''){const x=$('#status');x.textContent=t;x.className='status '+cls}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function api(action,payload={}){
-  const {data,error}=await sb.rpc('nlg_schedule_api',{p_code:access,p_action:action,p_payload:payload});
+  const {data,error}=await sb.rpc('nlg_schedule_api',{p_code:'',p_action:action,p_payload:payload});
   if(error) throw error;
   return data;
 }
@@ -38,25 +37,6 @@ function weekIndex(date,ws){const a=iso(anchorFor(parse(date)));return ws.findIn
 function rangeText(w){return `${w.start.toLocaleDateString('th-TH',{day:'numeric',month:'short'})} – ${w.anchor.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}`}
 function monthName(y,m){return new Date(y,m,1).toLocaleDateString('th-TH',{month:'long',year:'numeric'})}
 function englishMonth(y,m){return new Date(y,m,1).toLocaleDateString('en-US',{month:'long',year:'numeric'})}
-
-async function unlock(code){
-  access=code.trim();
-  if(!access) return;
-  $('#unlockBtn').disabled=true;
-  try{
-    await api('ping');
-    localStorage.setItem('nlg_access_code',access);
-    $('#unlock').classList.remove('open');
-    await loadMonthFromInput();
-  }catch(e){
-    localStorage.removeItem('nlg_access_code');access='';
-    toast('รหัสไม่ถูกต้อง');
-  }finally{$('#unlockBtn').disabled=false}
-}
-async function ensureAccess(){
-  if(!access){$('#unlock').classList.add('open');return false}
-  try{await api('ping');return true}catch(e){localStorage.removeItem('nlg_access_code');access='';$('#unlock').classList.add('open');return false}
-}
 
 async function load(y,m){
   state.year=y;state.month=m;month.value=`${y}-${pad(m+1)}`;
@@ -227,8 +207,6 @@ async function exportPNG(){
   finally{setStatus('บันทึกบน Supabase','ok')}
 }
 
-$('#unlockBtn').onclick=()=>unlock($('#accessInput').value);
-$('#accessInput').addEventListener('keydown',e=>{if(e.key==='Enter')unlock(e.target.value)});
 $('#kindSeg').onclick=e=>{const b=e.target.closest('[data-kind]');if(b)setKind(b.dataset.kind)};
 ['speakerOn','productOn','bringOn'].forEach(id=>$('#'+id).onchange=syncOptionBoxes);
 $('#saveItem').onclick=saveItem;$('#cancelItem').onclick=closeItem;
@@ -244,6 +222,6 @@ $('#exportBtn').onclick=exportPNG;
 
 (async()=>{
   const now=new Date();month.value=`${now.getFullYear()}-${pad(now.getMonth()+1)}`;
-  if(await ensureAccess()) await load(now.getFullYear(),now.getMonth());
+  await load(now.getFullYear(),now.getMonth());
 })();
 })();

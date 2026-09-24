@@ -30,11 +30,11 @@ function row(type,label,value){const empty=!String(value??'').trim();return `<di
 function card(x,settings){
   const d=parse(x.event_date),dc=DAY[d.getDay()];
   const h=`<div class="mo-cardhead" style="background:${dc.soft}"><i class="mo-marker" style="background:${dc.main}"></i><div><div class="dow" style="color:${dc.main}">${dc.th}</div><div class="date">${d.getDate()} ${d.toLocaleDateString('th-TH',{month:'short'})}</div></div></div>`;
-  if(x.kind==='special')return `<article class="mo-card mo-special-card" data-overview-edit="${x.id}" tabindex="0" role="button" aria-label="แก้ไข ${dc.th} ${d.getDate()}"><span class="mo-edit-hint">แตะเพื่อแก้ไข</span><button type="button" class="mo-delete" data-overview-delete="${x.id}" aria-label="ลบรายการ ${dc.th} ${d.getDate()}" title="ลบ">×</button>${h}<div class="mo-special" style="background:${dc.soft};color:${dc.main}">SPECIAL EVENT</div></article>`;
+  if(x.kind==='special')return `<article class="mo-card mo-special-card" data-overview-edit="${x.id}" tabindex="0" role="button" aria-label="แก้ไข ${dc.th} ${d.getDate()}"><span class="mo-edit-hint">แตะเพื่อแก้ไข</span>${h}<div class="mo-special" style="background:${dc.soft};color:${dc.main}">SPECIAL EVENT</div></article>`;
   let rows=row('product','PRODUCT',x.product)+row('speaker','SPEAKER',x.speaker);
   if(x.kind==='hm_large')rows+=row('bring','BRING',x.bring);
   const sets=(settings||[]).map(z=>`<div class="mo-setline"><span>${esc(z.label)}</span><span>${esc(z.value)}</span></div>`).join('');
-  return `<article class="mo-card" data-overview-edit="${x.id}" tabindex="0" role="button" aria-label="แก้ไข ${dc.th} ${d.getDate()}"><span class="mo-edit-hint">แตะเพื่อแก้ไข</span><button type="button" class="mo-delete" data-overview-delete="${x.id}" aria-label="ลบรายการ ${dc.th} ${d.getDate()}" title="ลบ">×</button>${h}<div class="mo-body"><div class="mo-keyrows">${rows}</div><div class="mo-set"><div class="mo-settitle">DEFAULT SET</div>${sets}</div></div></article>`
+  return `<article class="mo-card" data-overview-edit="${x.id}" tabindex="0" role="button" aria-label="แก้ไข ${dc.th} ${d.getDate()}"><span class="mo-edit-hint">แตะเพื่อแก้ไข</span>${h}<div class="mo-body"><div class="mo-keyrows">${rows}</div><div class="mo-set"><div class="mo-settitle">DEFAULT SET</div>${sets}</div></div></article>`
 }
 function ensureMount(){let el=$('#mainOverview');if(!el){el=document.createElement('section');el.id='mainOverview';const weeks=$('#weeks');weeks?.parentNode?.insertBefore(el,weeks)}return el}
 function zoomControls(){return `<div class="mo-zoom" aria-label="ปรับขนาดมุมมอง"><button type="button" data-mo-zoom="out" aria-label="ย่อ">−</button><span id="moZoomValue">100%</span><button type="button" data-mo-zoom="in" aria-label="ขยาย">＋</button><button type="button" class="fit" data-mo-fit>พอดีจอ</button></div>`}
@@ -87,13 +87,6 @@ function schedule(force=true){clearTimeout(timer);timer=setTimeout(()=>renderOve
 document.addEventListener('click',e=>{
   const z=e.target.closest?.('[data-mo-zoom]');if(z){setManualZoom(z.dataset.moZoom==='in'?.05:-.05);return}
   const fit=e.target.closest?.('[data-mo-fit]');if(fit){fitPage();return}
-  const del=e.target.closest?.('[data-overview-delete]');if(del){
-    e.preventDefault();e.stopPropagation();
-    const id=del.dataset.overviewDelete;
-    const hidden=document.querySelector(`#weeks [data-del="${CSS.escape(id)}"]`);
-    if(hidden)hidden.click();
-    return;
-  }
   const c=e.target.closest?.('[data-overview-edit]');if(!c)return;
   const id=c.dataset.overviewEdit;
   const hidden=document.querySelector(`#weeks [data-edit="${CSS.escape(id)}"]`);

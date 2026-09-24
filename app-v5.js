@@ -135,7 +135,7 @@ function weekHTML(w,i,items){
 }
 function cardHTML(x){
   const d=parse(x.event_date),dc=DAY[d.getDay()];
-  const head=`<div class="daytop" style="background:${dc.soft}"><div class="dayidentity"><i class="marker" style="background:${dc.main}"></i><div><div class="dow" style="color:${dc.main}">${dc.th}</div><div class="datebig">${d.getDate()} ${d.toLocaleDateString('th-TH',{month:'long'})}</div></div></div><div class="tools"><button class="iconbtn" data-edit="${x.id}">✎</button><button class="iconbtn" data-del="${x.id}">×</button></div></div>`;
+  const head=`<div class="daytop" style="background:${dc.soft}"><div class="dayidentity"><i class="marker" style="background:${dc.main}"></i><div><div class="dow" style="color:${dc.main}">${dc.th}</div><div class="datebig">${d.getDate()} ${d.toLocaleDateString('th-TH',{month:'long'})}</div></div></div><div class="tools"><button class="iconbtn" data-edit="${x.id}">✎</button></div></div>`;
   if(x.kind==='special') return `<article class="daycard">${head}<div class="special"><div class="specialtitle" style="background:${dc.soft};color:${dc.main}">${esc(x.title||'Special Event')}</div></div></article>`;
   let rows='';
   if(x.speaker) rows+=hmrow('SPEAKER',x.speaker);
@@ -164,6 +164,7 @@ function openItem(id=null,date=null){
   editId=id;
   const x=id?state.items.find(i=>i.id===id):null;
   $('#formTitle').textContent=id?'แก้ไขวัน':'เพิ่มวัน';
+  $('#deleteZone').hidden=!id;
   $('#fDate').value=x?.event_date||date||`${month.value}-01`;
   $('#fSpeaker').value=x?.speaker||'';$('#fProduct').value=x?.product||'';$('#fBring').value=x?.bring||'';$('#fTitle').value=x?.title||'';
   $('#speakerOn').checked=!!x?.speaker || !x;
@@ -192,8 +193,19 @@ async function saveItem(){
   finally{busy=false;$('#saveItem').disabled=false}
 }
 async function deleteItem(id){
-  const x=state.items.find(i=>i.id===id);if(!x||!confirm('ลบรายการวันนี้?'))return;
-  try{await api('delete_item',{id});announceLiveChange('month');await load(state.year,state.month);toast('ลบแล้ว')}catch(e){toast('ลบไม่สำเร็จ')}
+  const x=state.items.find(i=>i.id===id);if(!x||busy)return;
+  const typed=prompt('พิมพ์คำว่า delete เพื่อยืนยันการลบรายการนี้');
+  if(typed===null)return;
+  if(typed.trim()!=='delete'){toast('ไม่ได้ลบ: ต้องพิมพ์ delete ให้ตรง');return}
+  busy=true;$('#deleteItem').disabled=true;setStatus('กำลังลบ...');
+  try{
+    await api('delete_item',{id});
+    announceLiveChange('month');
+    closeItem();
+    await load(state.year,state.month);
+    toast('ลบแล้ว');
+  }catch(e){console.error(e);toast('ลบไม่สำเร็จ');setStatus('เกิดข้อผิดพลาด','err')}
+  finally{busy=false;$('#deleteItem').disabled=false}
 }
 
 function openSettings(){
@@ -243,11 +255,11 @@ async function exportPNG(){
 
 $('#kindSeg').onclick=e=>{const b=e.target.closest('[data-kind]');if(b)setKind(b.dataset.kind)};
 ['speakerOn','productOn','bringOn'].forEach(id=>$('#'+id).onchange=syncOptionBoxes);
-$('#saveItem').onclick=saveItem;$('#cancelItem').onclick=closeItem;
+$('#saveItem').onclick=saveItem;$('#cancelItem').onclick=closeItem;$('#deleteItem').onclick=()=>{if(editId)deleteItem(editId)};
 itemModal.onclick=e=>{if(e.target===itemModal)closeItem()};
 $('#settingsBtn').onclick=openSettings;$('#cancelSettings').onclick=()=>settingsModal.classList.remove('open');$('#saveSettings').onclick=saveSettings;
 settingsModal.onclick=e=>{if(e.target===settingsModal)settingsModal.classList.remove('open')};
-weeks.onclick=e=>{const ed=e.target.closest('[data-edit]');if(ed)return openItem(ed.dataset.edit);const del=e.target.closest('[data-del]');if(del)return deleteItem(del.dataset.del)};
+weeks.onclick=e=>{const ed=e.target.closest('[data-edit]');if(ed)return openItem(ed.dataset.edit)};
 $('#addTop').onclick=$('#fab').onclick=()=>openItem();
 $('#prev').onclick=()=>{const d=new Date(state.year,state.month-1,1);load(d.getFullYear(),d.getMonth())};
 $('#next').onclick=()=>{const d=new Date(state.year,state.month+1,1);load(d.getFullYear(),d.getMonth())};

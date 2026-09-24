@@ -28,8 +28,13 @@ body.overview-live .hero,body.overview-live .legend,body.overview-live #weeks{di
 .mo-card:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(20,24,32,.08);border-color:#cfd3da}
 .mo-card:active{transform:scale(.995)}
 .mo-card:focus-visible{box-shadow:0 0 0 3px rgba(23,24,27,.12)}
-.mo-edit-hint{position:absolute;right:9px;top:9px;z-index:2;background:rgba(255,255,255,.86);border:1px solid rgba(0,0,0,.06);border-radius:8px;padding:4px 7px;font-size:9px;font-weight:900;color:#6f737c;backdrop-filter:blur(8px);opacity:0;transition:.15s}
+.mo-edit-hint{position:absolute;right:45px;top:9px;z-index:2;background:rgba(255,255,255,.86);border:1px solid rgba(0,0,0,.06);border-radius:8px;padding:4px 7px;font-size:9px;font-weight:900;color:#6f737c;backdrop-filter:blur(8px);opacity:0;transition:.15s}
 .mo-card:hover .mo-edit-hint,.mo-card:focus-visible .mo-edit-hint{opacity:1}
+.mo-delete{position:absolute;right:9px;top:8px;z-index:3;width:29px;height:29px;border:1px solid rgba(217,48,37,.16);border-radius:9px;background:rgba(255,255,255,.9);color:#d93025;font-size:19px;font-weight:900;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);opacity:.72;transition:opacity .15s ease,background .15s ease,transform .15s ease}
+.mo-card:hover .mo-delete,.mo-delete:focus-visible{opacity:1}
+.mo-delete:hover{background:#fff1f0;transform:scale(1.04)}
+.mo-delete:active{transform:scale(.96)}
+.mo-delete:focus-visible{outline:2px solid rgba(217,48,37,.22);outline-offset:2px}
 .mo-cardhead{display:flex;align-items:center;gap:8px;padding:9px 10px;min-height:52px}
 .mo-marker{width:6px;height:33px;border-radius:99px;flex:none}
 .mo-cardhead .dow{font-size:9.5px;font-weight:950;line-height:1.1}
@@ -60,5 +65,6 @@ body.overview-live .hero,body.overview-live .legend,body.overview-live #weeks{di
   .main-overview-board{min-width:980px;padding:13px}
   .mo-head h1{font-size:31px}.mo-head p{font-size:10px}
   .mo-weeklabel{min-height:235px}.mo-daycell{min-height:235px}
-  .mo-edit-hint{opacity:1;font-size:8px;padding:3px 6px}
+  .mo-edit-hint{opacity:1;font-size:8px;padding:3px 6px;right:43px}
+  .mo-delete{opacity:1;width:28px;height:28px;top:7px;right:8px}
 }

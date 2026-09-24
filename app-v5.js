@@ -27,7 +27,7 @@ async function api(action,payload={}){
   if(error) throw error;
   return data;
 }
-function anchorFor(d){let x=new Date(d);x.setDate(x.getDate()+((4-x.getDay()+7)%7));return x}
+function anchorFor(d){let x=new Date(d);x.setDate(x.getDate()+((7-x.getDay())%7));return x}
 function buildWeeks(y,m){
   const first=new Date(y,m,1),last=new Date(y,m+1,0);let a=anchorFor(first),out=[];
   for(;;){let s=new Date(a);s.setDate(a.getDate()-6);out.push({start:s,anchor:new Date(a)});if(a>=last)break;a.setDate(a.getDate()+7)}

@@ -17,12 +17,12 @@ const DAY=[
   {th:'เสาร์',main:'#8664d2',soft:'#f0ebfb'}
 ];
 const MONDAY_ORDER=[1,2,3,4,5,6,0];
-function anchorFor(d){const x=new Date(d);x.setDate(x.getDate()+((4-x.getDay()+7)%7));return x}
+function anchorFor(d){const x=new Date(d);x.setDate(x.getDate()+((7-x.getDay())%7));return x}
 function buildWeeks(y,m){const first=new Date(y,m,1),last=new Date(y,m+1,0);let a=anchorFor(first),out=[];for(;;){const s=new Date(a);s.setDate(a.getDate()-6);out.push({start:s,anchor:new Date(a)});if(a>=last)break;a.setDate(a.getDate()+7)}return out}
 function weekIndex(date,ws){const a=iso(anchorFor(parse(date)));return ws.findIndex(w=>iso(w.anchor)===a)}
 function rangeText(w){return `${w.start.toLocaleDateString('th-TH',{day:'numeric',month:'short'})} – ${w.anchor.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}`}
 function englishMonth(y,m){return new Date(y,m,1).toLocaleDateString('en-US',{month:'long',year:'numeric'})}
-async function api(action,payload={}){const code=localStorage.getItem('nlg_access_code')||'';const {data,error}=await sbx.rpc('nlg_schedule_api',{p_code:code,p_action:action,p_payload:payload});if(error)throw error;return data}
+async function api(action,payload={}){const {data,error}=await sbx.rpc('nlg_schedule_api',{p_code:'',p_action:action,p_payload:payload});if(error)throw error;return data}
 function detailRow(type,label,value){
   const empty=!String(value??'').trim();
   const text=empty?'ยังไม่มีคนลง':esc(value);
@@ -61,7 +61,7 @@ function buildBoard(y,m,items,settings){
     }).join('');
     return `<div class="ex-week" style="grid-template-columns:${gridCols}"><div class="ex-weeklabel"><b>Week ${g.i+1}</b><span>${rangeText(g.w)}</span></div>${cells}</div>`;
   }).join('');
-  board.innerHTML=`<div class="ex-head"><h1>${englishMonth(y,m)}</h1><p>Monthly HM Overview • เฉพาะวันที่มีตาราง</p></div>${activeDays.length?`<div class="ex-colheads" style="grid-template-columns:${gridCols}"><div class="ex-colspacer"></div>${heads}</div>${rows}`:'<div class="empty">No schedule</div>'}<div class="ex-exportnote">เรียง Column เริ่มจากวันจันทร์ • Week = ศุกร์–พฤหัส</div>`;
+  board.innerHTML=`<div class="ex-head"><h1>${englishMonth(y,m)}</h1><p>Monthly HM Overview • เฉพาะวันที่มีตาราง</p></div>${activeDays.length?`<div class="ex-colheads" style="grid-template-columns:${gridCols}"><div class="ex-colspacer"></div>${heads}</div>${rows}`:'<div class="empty">No schedule</div>'}<div class="ex-exportnote">เรียง Column เริ่มจากวันจันทร์ • Week = จันทร์–อาทิตย์</div>`;
 }
 async function exportColumnsPNG(){
   if(typeof html2canvas!=='function')return;

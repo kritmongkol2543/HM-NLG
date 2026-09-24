@@ -20,7 +20,7 @@ const ORDER=[1,2,3,4,5,6,0];
 let timer=null,lastKey='';
 let zoomMode=localStorage.getItem('nlg_overview_zoom_mode')||'fit';
 let manualZoom=Math.max(.30,Math.min(1,Number(localStorage.getItem('nlg_overview_zoom'))||.75));
-function anchorFor(d){const x=new Date(d);x.setDate(x.getDate()+((4-x.getDay()+7)%7));return x}
+function anchorFor(d){const x=new Date(d);x.setDate(x.getDate()+((7-x.getDay())%7));return x}
 function buildWeeks(y,m){const first=new Date(y,m,1),last=new Date(y,m+1,0);let a=anchorFor(first),out=[];for(;;){const s=new Date(a);s.setDate(a.getDate()-6);out.push({start:s,anchor:new Date(a)});if(a>=last)break;a.setDate(a.getDate()+7)}return out}
 function weekIndex(date,ws){const a=iso(anchorFor(parse(date)));return ws.findIndex(w=>iso(w.anchor)===a)}
 function rangeText(w){return `${w.start.toLocaleDateString('th-TH',{day:'numeric',month:'short'})} – ${w.anchor.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}`}
@@ -79,7 +79,7 @@ async function renderOverview(force=false){
       return `<div class="mo-week" style="grid-template-columns:${grid}"><div class="mo-weeklabel"><b>Week ${g.i+1}</b><span>${rangeText(g.w)}</span></div>${cells}</div>`
     }).join('');
     const mount=ensureMount();
-    mount.innerHTML=`<div class="mo-viewbar"><div><b>ภาพรวมทั้งเดือน</b><span>ย่อเพื่อดูทั้งหน้า หรือขยายเพื่อแก้รายละเอียด</span></div>${zoomControls()}</div><div class="main-overview-scroll"><div class="main-overview-board"><div class="mo-head"><h1>${englishMonth(y,mm-1)}</h1><p>Monthly HM Overview • แตะ Card เพื่อแก้ไข</p></div>${active.length?`<div class="mo-colheads" style="grid-template-columns:${grid}"><div class="mo-colspacer"></div>${heads}</div>${rows}`:'<div class="mo-empty">เดือนนี้ยังไม่มีตาราง</div>'}<div class="mo-note">Week = ศุกร์–พฤหัส • แสดงเฉพาะวันที่มีตาราง</div></div></div>`;
+    mount.innerHTML=`<div class="mo-viewbar"><div><b>ภาพรวมทั้งเดือน</b><span>ย่อเพื่อดูทั้งหน้า หรือขยายเพื่อแก้รายละเอียด</span></div>${zoomControls()}</div><div class="main-overview-scroll"><div class="main-overview-board"><div class="mo-head"><h1>${englishMonth(y,mm-1)}</h1><p>Monthly HM Overview • แตะ Card เพื่อแก้ไข</p></div>${active.length?`<div class="mo-colheads" style="grid-template-columns:${grid}"><div class="mo-colspacer"></div>${heads}</div>${rows}`:'<div class="mo-empty">เดือนนี้ยังไม่มีตาราง</div>'}<div class="mo-note">Week = จันทร์–อาทิตย์ • แสดงเฉพาะวันที่มีตาราง</div></div></div>`;
     document.body.classList.add('overview-live');lastKey=key;requestAnimationFrame(applyZoom);
   }catch(e){console.error('overview',e)}
 }

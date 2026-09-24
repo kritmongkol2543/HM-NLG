@@ -73,6 +73,11 @@ button{touch-action:manipulation}
 .optrow .grow{flex:1}
 .formbox{padding:11px;border:1px solid #e6e8ed;border-radius:14px;background:#fafbfc;margin-top:8px}
 .formbox.disabled{opacity:.45}
+.delete-zone{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:15px;padding:10px 11px;border:1px solid #f0c7c3;border-radius:13px;background:#fff8f7}
+.delete-zone[hidden]{display:none}
+.delete-zone .btn{height:42px;border-color:#efc0bb;background:#fff;color:#b42318;flex:none}
+.delete-zone span{font-size:10px;color:#8b4b45;text-align:right;line-height:1.35}
+.delete-zone b{color:#b42318}
 .sacts{display:grid;grid-template-columns:1fr 1.5fr;gap:8px;margin-top:15px}
 .sacts .btn{height:47px}
 .settingrow{display:grid;grid-template-columns:1.3fr .9fr;gap:8px;margin:8px 0}

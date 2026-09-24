@@ -17,6 +17,7 @@ const DAY=[
 ];
 let state={year:0,month:0,items:[],settings:[]};
 let editId=null,kind='hm_large',busy=false;
+let liveChannel=null,liveReloadTimer=null,reconcileTimer=null;
 const month=$('#month'), weeks=$('#weeks'), itemModal=$('#itemModal'), settingsModal=$('#settingsModal');
 
 function toast(t){const x=$('#toast');x.textContent=t;x.classList.add('on');setTimeout(()=>x.classList.remove('on'),1700)}
@@ -26,6 +27,39 @@ async function api(action,payload={}){
   const {data,error}=await sb.rpc('nlg_schedule_api',{p_code:'',p_action:action,p_payload:payload});
   if(error) throw error;
   return data;
+}
+function queueLiveReload(delay=180){
+  clearTimeout(liveReloadTimer);
+  liveReloadTimer=setTimeout(()=>{
+    if(busy){queueLiveReload(350);return}
+    load(state.year,state.month);
+  },delay);
+}
+function announceLiveChange(scope='month'){
+  if(!liveChannel)return;
+  liveChannel.send({
+    type:'broadcast',
+    event:'data_changed',
+    payload:{scope,month:month.value,at:Date.now()}
+  }).catch(()=>{});
+}
+function setupLiveSync(){
+  if(liveChannel)return;
+  liveChannel=sb
+    .channel('nlg-hm-live-v1',{config:{broadcast:{self:false}}})
+    .on('broadcast',{event:'data_changed'},({payload})=>{
+      if(payload?.scope==='settings'||payload?.month===month.value) queueLiveReload();
+    })
+    .subscribe();
+
+  window.addEventListener('online',()=>queueLiveReload(80));
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden) queueLiveReload(80);
+  });
+
+  reconcileTimer=setInterval(()=>{
+    if(!document.hidden&&!busy) queueLiveReload(0);
+  },30000);
 }
 function anchorFor(d){let x=new Date(d);x.setDate(x.getDate()+((7-x.getDay())%7));return x}
 function buildWeeks(y,m){
@@ -153,13 +187,13 @@ async function saveItem(){
   if(kind==='special'&&!payload.title)return toast('ใส่ชื่อ Event');
   busy=true;$('#saveItem').disabled=true;setStatus('กำลังบันทึก...');
   try{
-    await api('save_item',payload);closeItem();await load(state.year,state.month);toast('บันทึกแล้ว');
+    await api('save_item',payload);announceLiveChange('month');closeItem();await load(state.year,state.month);toast('บันทึกแล้ว');
   }catch(e){console.error(e);toast('บันทึกไม่สำเร็จ');setStatus('เกิดข้อผิดพลาด','err')}
   finally{busy=false;$('#saveItem').disabled=false}
 }
 async function deleteItem(id){
   const x=state.items.find(i=>i.id===id);if(!x||!confirm('ลบรายการวันนี้?'))return;
-  try{await api('delete_item',{id});await load(state.year,state.month);toast('ลบแล้ว')}catch(e){toast('ลบไม่สำเร็จ')}
+  try{await api('delete_item',{id});announceLiveChange('month');await load(state.year,state.month);toast('ลบแล้ว')}catch(e){toast('ลบไม่สำเร็จ')}
 }
 
 function openSettings(){
@@ -171,7 +205,7 @@ async function saveSettings(){
     label:($(`[data-si="${i}"][data-sf="label"]`)?.value||'').trim(),
     value:($(`[data-si="${i}"][data-sf="value"]`)?.value||'').trim()
   }));
-  try{await api('save_settings',{set_lines:lines});state.settings=lines;settingsModal.classList.remove('open');render();toast('บันทึก Default แล้ว')}catch(e){toast('บันทึก Setting ไม่สำเร็จ')}
+  try{await api('save_settings',{set_lines:lines});announceLiveChange('settings');state.settings=lines;settingsModal.classList.remove('open');render();toast('บันทึก Default แล้ว')}catch(e){toast('บันทึก Setting ไม่สำเร็จ')}
 }
 
 function buildExport(){
@@ -223,5 +257,6 @@ $('#exportBtn').onclick=exportPNG;
 (async()=>{
   const now=new Date();month.value=`${now.getFullYear()}-${pad(now.getMonth()+1)}`;
   await load(now.getFullYear(),now.getMonth());
+  setupLiveSync();
 })();
 })();
